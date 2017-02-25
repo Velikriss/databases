@@ -1,27 +1,36 @@
 var db = require('../db');
 var mysql = require('mysql');
-var Promise = require('bluebird');
 
 module.exports = {
   messages: {
     get: function (callback) {
-      db.query('SELECT * FROM messages', callback);
+      db.query('SELECT * FROM messages ORDER BY created DESC', callback);
     }, // a function which produces all the messages
     post: function (parameters, callback) {
       db.query(
-        mysql.format(
-          'INSERT INTO messages (message, user, room) VALUES (?, ?, ?)',
-          [parameters.message, parameters.user, parameters.room]
-        ),
-        callback
+        'INSERT INTO users (name) VALUES (?)',
+        [parameters.name_User],
+        (error, results, fields) => {
+          if (error) {
+            console.log('User exists');
+          }
+          db.query(
+          'INSERT INTO messages (message, name_User, room) VALUES (?, ?, ?)',
+          [parameters.message, parameters.name_User, parameters.room],
+          (error, results, fields) => {
+            callback(error, results, fields);
+          });
+        }
       );
     } // a function which can be used to insert a message into the database
   },
 
   users: {
-    // Ditto as above.
-    get: function () {},
-    post: function () {}
+    get: function (callback) {
+      db.query('SELECT * FROM users', callback);
+    },
+    post: function (name, callback) {
+      db.query('INSERT INTO users (name) VALUES (?)', [name], callback);
+    }
   }
 };
-
