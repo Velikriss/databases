@@ -3,8 +3,16 @@ var db = require('../db');
 module.exports = {
   messages: {
     get: function () {
-      return db.Messages.findAll();
-    
+      
+      return db.Messages.find({ include: [db.Users]});
+        
+        
+
+/*        SELECT users.name AS username, messages.text AS text, messages.roomname AS roomname
+        FROM messages
+        INNER JOIN users
+        ON (messages.userid = users.id);
+*/    
     }, // a function which produces all the messages
     post: function (parameters) {
 

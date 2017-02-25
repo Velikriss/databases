@@ -5,22 +5,21 @@ var db = new SQL('chat', 'root', '', {
   dialect: 'mysql'
 });
 
-db.Users = db.define('users', {
-  name: SQL.STRING
-});
 
-db.Messages = db.define('messages', {
-  userid: SQL.INTEGER,
+var Message = db.define('message', {
   text: SQL.STRING,
   roomname: SQL.STRING
 });
 
-//implement syncs
-db.Messages.sync()
-  .catch(error => {
-    console.log(error);
-    db.close();
-  });
+var User = db.define('user', {
+  name: SQL.STRING
+});
 
-module.exports = db;
+User.hasMany(Message);
+Message.belongsTo(User);
 
+User.sync();
+Message.sync();
+
+exports.User = User;
+exports.Message = Message;
