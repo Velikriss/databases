@@ -3,7 +3,7 @@ var db = require('../db');
 module.exports = {
   messages: {
     get: function (request, response) {
-      db.Message.findAll({include: [db.User]})
+      db.Message.findAll({order: 'createdAt DESC', include: [db.User]})
         .then(results => {
           response.json({results: results});
         });
